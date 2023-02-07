@@ -75,7 +75,7 @@
   See also https://mailtrap.io/blog/verify-email-address-without-sending/
   for more information about the whole email validation & verification process."
   [email mail-from & {:keys [check-disposable check-mx-record check-recipient]
-                      :or {check-disposable true  check-mx-record true check-recipient true}
+                      :or {check-disposable true check-mx-record true check-recipient false}
                       :as _options}]
   (assert (or (not check-recipient)
               (and check-recipient check-mx-record))
@@ -127,15 +127,15 @@
   ;; => {:valid? false, :email-domain "non-existent-email-domain.com", :disposable false, :mail-server nil, :recipient-error :unknown}
 
   ;; disposable email domain
-  (verify! "testikabcd@mailinator.com" my-from :check-recipient false)
-  ;; => {:valid? false, :email-domain "mailinator.com", :disposable? true, :mail-server "mail2.mailinator.com.", :recipient-error nil}
+  (verify! "testikabcd@mailinator.com" my-from)
+  ;; => {:valid? false, :email-domain "mailinator.com", :disposable true, :mail-server "mail2.mailinator.com.", :recipient-error :unknown}
 
-  (verify! "sales@codescene.com" my-from)
+  ;;; TODO: full email verification only works for JDK 8
+  (verify! "sales@codescene.com" my-from :check-recipient true)
   ;; => {:valid? true, :email-domain "codescene.com", :disposable? false, :mail-server "aspmx.l.google.com.", :recipient-error nil}
 
-  (verify! "not.exists@codescene.com" my-from)
+  (verify! "not.exists@codescene.com" my-from :check-recipient true)
   ;; => {:valid? false, :email-domain "codescene.com", :disposable? false, :mail-server "aspmx.l.google.com.", :recipient-error "550-5.1.1 The email account that you tried to reach does not exist. Please try\n"}
-
 
   (verify! "testikabcd@example.com" my-from)
 
