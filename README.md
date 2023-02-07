@@ -10,7 +10,7 @@ You use the `verify-email!` function like this:
 ```
 (require '[net.curiousprogrammer.email :as email]')
 
-(email/verify! "testikabcd@mailinator.com" my-from :check-recipient false)
+(email/verify! "testikabcd@mailinator.com" "from")
 ;; => {:valid? false, :email-domain "mailinator.com", :disposable? true, :mail-server "mail2.mailinator.com.", :recipient-error nil}
 ```
 

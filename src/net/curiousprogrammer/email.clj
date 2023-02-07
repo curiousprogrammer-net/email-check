@@ -55,9 +55,6 @@
   - DNS lookup (via dnsjava lib: https://github.com/dnsjava/dnsjava/blob/master/EXAMPLES.md)
   - Email box ping
 
-  Optional `mail-from` parameter is used in `check-recipient!` when as 'MAIL FROM' smtp param.
-  If you don't care, you can use something like 'no-reply@example.com'.
-
   Options can be specified as a final hashmap-like argument:
   ---------------------------------------------------------
   1. `:check-disposable` (default: true) -  checks that the email domain is not disposable like `mailinator.com`.
@@ -67,6 +64,8 @@
       It requires `:check-mx-record` to be `true`.
       It's `false` by default since it involves a full SMTP transaction which is more prone to failures
       than the other simpler checks.
+      The `check-recipient-mail-from` parameter is used for in `check-recipient!` for the 'MAIL FROM' smtp param.
+      It defaults to 'no-reply@example.com'.
 
   Returns a map structure describing the validation result:
   - `:valid?` - overall result of the validation, true or false; depends on the options
@@ -74,9 +73,10 @@
 
   See also https://mailtrap.io/blog/verify-email-address-without-sending/
   for more information about the whole email validation & verification process."
-  [email mail-from & {:keys [check-disposable check-mx-record check-recipient]
-                      :or {check-disposable true check-mx-record true check-recipient false}
-                      :as _options}]
+  [email & {:keys [check-disposable check-mx-record check-recipient check-recipient-mail-from]
+            :or {check-disposable true check-mx-record true check-recipient false
+                 check-recipient-mail-from "no-reply@example.com"}
+            :as _options}]
   (assert (or (not check-recipient)
               (and check-recipient check-mx-record))
           "If check-recipient is true, you must also set check-mx-record to true!")
@@ -92,7 +92,7 @@
                     ;; add a level of indirection through requiring-resolve because smtp functionality might not be needed
                     ;; and it could load unnecessary dependencies such as internal JDK classes
                     (let [check-recipient-fn (requiring-resolve 'net.curiousprogrammer.smtp/check-recipient!)]
-                      (some-> mail-server (check-recipient-fn mail-from email)))
+                      (some-> mail-server (check-recipient-fn check-recipient-mail-from email)))
                     :unknown)
         recipient-error (if (map? recipient)
                           (:error recipient)
@@ -111,11 +111,7 @@
   (disposable? "testik@mailinator.com")
   ;; => true
 
-  (def my-from "no-reply@example.com")
-
-  (verify! "sales@codescene.com"
-                 my-from
-                 :check-recipient false)
+  (verify! "sales@codescene.com")
   ;; => {:valid? true,
   ;;     :email-domain "codescene.com",
   ;;     :disposable false,
@@ -123,21 +119,21 @@
   ;;     :recipient-error :unknown}
 
   ;; invalid MX record
-  (verify! "testikabcd@non-existent-email-domain.com" my-from :check-recipient false)
+  (verify! "testikabcd@non-existent-email-domain.com" :check-recipient false)
   ;; => {:valid? false, :email-domain "non-existent-email-domain.com", :disposable false, :mail-server nil, :recipient-error :unknown}
 
   ;; disposable email domain
-  (verify! "testikabcd@mailinator.com" my-from)
+  (verify! "testikabcd@mailinator.com")
   ;; => {:valid? false, :email-domain "mailinator.com", :disposable true, :mail-server "mail2.mailinator.com.", :recipient-error :unknown}
 
   ;;; TODO: full email verification only works for JDK 8
-  (verify! "sales@codescene.com" my-from :check-recipient true)
+  (verify! "sales@codescene.com" :check-recipient true)
   ;; => {:valid? true, :email-domain "codescene.com", :disposable? false, :mail-server "aspmx.l.google.com.", :recipient-error nil}
 
-  (verify! "not.exists@codescene.com" my-from :check-recipient true)
+  (verify! "not.exists@codescene.com" :check-recipient true)
   ;; => {:valid? false, :email-domain "codescene.com", :disposable? false, :mail-server "aspmx.l.google.com.", :recipient-error "550-5.1.1 The email account that you tried to reach does not exist. Please try\n"}
 
-  (verify! "testikabcd@example.com" my-from)
+  (verify! "testikabcd@example.com")
 
   )
 
