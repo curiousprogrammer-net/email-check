@@ -1,4 +1,9 @@
 (ns net.curiousprogrammer.email
+  "Basic utilities for checking emails.
+  The core function is `verify!` which can perform multiple checks
+  depending on the options.
+
+  You can also call `validate` (basic syntax check) and `disposable?` separately."
   (:require
    [clojure.string :as str]
    [net.curiousprogrammer.dns :as dns]
@@ -18,7 +23,7 @@
   For a more thorough see `verify!`."
   [email]
   (cond
-    (or (empty? email) (str/blank? email)) "email must not be empty"
+    (or (empty? email) (str/blank? email)) "Email must not be empty"
     (nil? (re-matches email-regex email)) "Invalid email format"))
 
 
@@ -70,6 +75,14 @@
   Returns a map structure describing the validation result:
   - `:valid?` - overall result of the validation, true or false; depends on the options
   - `:email-domain` - domain derived from the given email
+  - `:format-error` - string description of a syntactic error with given email address as per `validate`,
+                      or `nil` of the format is valid
+  - `:disposable` -  true if the email's domain is disposable (such as mailinator.com),
+                     false if the domain is not disposable,
+                     :unknown if it couldn't be checked (due to a network error such as request timeout)
+  - `:mail-server` - the mail server (if any) retrieved via the email domain's MX record
+                     or :unknown if the `check-mx-record` was set to false
+  - `:recipient-error` - the error (if any) received during `check-recipient` smtp verification process
 
   See also https://mailtrap.io/blog/verify-email-address-without-sending/
   for more information about the whole email validation & verification process."
@@ -82,13 +95,13 @@
           "If check-recipient is true, you must also set check-mx-record to true!")
 
   (let [domain (email-domain email)
-        disposable (if check-disposable
+        disposable (if (and domain check-disposable)
                      (disposable-domain? domain)
                      :unknown)
-        mail-server (if check-mx-record
+        mail-server (if (and domain check-mx-record)
                       (:target (dns/valid-mx-record domain))
                       :unknown)
-        recipient (if check-recipient
+        recipient (if (and domain check-recipient)
                     ;; add a level of indirection through requiring-resolve because smtp functionality might not be needed
                     ;; and it could load unnecessary dependencies such as internal JDK classes
                     (let [check-recipient-fn (requiring-resolve 'net.curiousprogrammer.smtp/check-recipient!)]
@@ -97,11 +110,13 @@
         recipient-error (if (map? recipient)
                           (:error recipient)
                           :unknown)]
-    {:valid? (->> [(not disposable) mail-server recipient-error]
+    {:valid? (->> [domain (not disposable) mail-server recipient-error]
                   (remove #{:unknown})
                   (every? identity))
+     :format-error (validate email)
      :email-domain domain
-     :disposable disposable
+     :email-format-error (validate email)
+     :disposable? disposable
      :mail-server mail-server
      :recipient-error recipient-error}))
 

@@ -39,10 +39,12 @@ information in generated `pom.xml` by updating `build.clj`.
 
     $ clojure -T:build install
 
-### Deploy it to Clojars -- needs `CLOJARS_USERNAME` and `CLOJARS_PASSWORD` environment
-variables (requires the `ci` task be run first):
+### Deploy it to Clojars
 
-    $ clojure -T:build deploy
+This requires the `ci` task be run first
+and needs `CLOJARS_USERNAME` and `CLOJARS_PASSWORD` environment variables (here supplied via 1Password CLI and the `clojars.env` file):
+
+    $ op run --env-file="clojars.env" -- clojure -T:build deploy
 
 The library will be deployed to net.curiousprogrammer/email-check on clojars.org by default.
 
