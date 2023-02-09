@@ -1,9 +1,11 @@
 (ns net.curiousprogrammer.email
   "Basic utilities for checking emails.
-  The core function is `verify!` which can perform multiple checks
-  depending on the options.
+  The core function is `verify!` which can perform multiple checks depending on the options.
+  You can also call `validate` (basic syntax check) and `disposable?` separately.
 
-  You can also call `validate` (basic syntax check) and `disposable?` separately."
+  Resources
+  - email regex-based validator: https://github.com/lamuria/email-validator
+  - info about browsers and the 'email' input type: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email#validation"
   (:require
    [clojure.string :as str]
    [net.curiousprogrammer.dns :as dns]
@@ -14,13 +16,9 @@
 
 (defn validate
   "A basic validation of an email - syntactical check.
-  Returns nil if the email is valid, error message otherwise.
+  For a more thorough check, see `verify!`.
 
-  This is a little library that does something similar: https://github.com/lamuria/email-validator
-
-  For info about browsers and the 'email' input type: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email#validation
-
-  For a more thorough see `verify!`."
+  Returns nil if the email is valid, error message otherwise."
   [email]
   (cond
     (or (empty? email) (str/blank? email)) "Email must not be empty"
@@ -58,7 +56,7 @@
   - Syntax validation (same as `validate`)
   - Check for disposable emails (ala mailinator.com)
   - DNS lookup (via dnsjava lib: https://github.com/dnsjava/dnsjava/blob/master/EXAMPLES.md)
-  - Email box ping
+  - Email box ping (disabled by default - DOES NOT WORK YET with modern JDK versions)
 
   Options can be specified as a final hashmap-like argument:
   ---------------------------------------------------------
