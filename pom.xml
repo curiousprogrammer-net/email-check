@@ -19,7 +19,7 @@
     </developer>
   </developers>
   <scm>
-    <url>https://github.com/net.curiousprogrammer/email-check</url>
+    <url>https://github.com/curiousprogrammer-net/email-check</url>
     <connection>scm:git:git://github.com/net.curiousprogrammer/email-check.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/net.curiousprogrammer/email-check.git</developerConnection>
     <tag>v0.1.0-SNAPSHOT</tag>
