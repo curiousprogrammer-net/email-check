@@ -41,6 +41,10 @@ information in generated `pom.xml` by updating `build.clj`.
 
 ### Deploy it to Clojars
 
+NOTE: make sure to update the artifact `version` in `build.clj` before running `clojure -T:build ci` above
+and the deploy task below.
+There's also a helper script `deploy-clojars.sh` that runs both.
+
 This requires the `ci` task be run first
 and needs `CLOJARS_USERNAME` and `CLOJARS_PASSWORD` environment variables (here supplied via 1Password CLI and the `clojars.env` file):
 
