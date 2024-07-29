@@ -1,9 +1,8 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## [Unreleased]
+## [Unreleased](https://github.com/curiousprogrammer-net/email-check/compare/0.1.3...HEAD)
 
-[Unreleased]:[https://github.com/net.curiousprogrammer/email-check/compare/0.1.3...HEAD
 
 
 ## 0.1.3 - 2024-07-29
