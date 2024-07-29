@@ -1,7 +1,7 @@
 {:paths ["src" "resources"]
  :deps {org.clojure/clojure {:mvn/version "1.11.1"}
         ;; for email domain MX record validation: https://github.com/dnsjava/dnsjava/blob/master/EXAMPLES.md
-        dnsjava/dnsjava {:mvn/version "3.5.2"}
+        dnsjava/dnsjava {:mvn/version "3.6.0"}
         ;; TODO: commons-net has SMTPClient: https://commons.apache.org/proper/commons-net/javadocs/api-3.6/org/apache/commons/net/smtp/SMTPClient.html#verify(java.lang.String)
         ;; commons-net/commons-net {:mvn/version "3.9.0"}
         }
