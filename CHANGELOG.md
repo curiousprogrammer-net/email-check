@@ -3,7 +3,14 @@ All notable changes to this project will be documented in this file. This change
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/net.curiousprogrammer/email-check/compare/0.1.2...HEAD
+[Unreleased]: https://github.com/net.curiousprogrammer/email-check/compare/0.1.3...HEAD
+
+
+## 0.1.3 - 2024-07-29
+
+- fix CVE in dnsjava by updating the dependency to 3.6.0
+  - see https://scout.docker.com/vulnerabilities/id/CVE-2024-25638?s=github&n=dnsjava&ns=dnsjava&t=maven&vr=%3C3.6.0
+
 
 ## 0.1.2 - 2023-02-09
 
